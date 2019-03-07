@@ -9,7 +9,7 @@
 import UIKit
 
 struct Aeroporti:Codable {
-    let aeroporti: Aeroporto
+    let aeroporti: [Aeroporto]
 }
 
 struct Coordinate:Codable {
@@ -37,24 +37,18 @@ struct Aeroporto:Codable {
     let distanze: Distanza
 }
 
-
-
-
 let jsonStringData = "Nearest airport".data(using: .utf8)!
 //let decoder = JSONDecoder()
-let vicino = try JSONDecoder().decode([Aeroporti].self, from: jsonStringData)
+//let vicino = try JSONDecoder().decode([Aeroporti].self, from: jsonStringData)
 //let vicino = try decoder.decode(Aeroporti.self, from: jsonStringData)
 
-
-
-func AeroportoVicino(){
+func AeroportoVicino(città: Coordinate){
     let key = "t6gnvthb46ue64525naf6cbp"
-    var input:Coordinate = Coordinate.init(longitudine: 38.193, latitudine: 15.552)
     let session = URLSession(configuration: URLSessionConfiguration.default, delegate: nil, delegateQueue: OperationQueue.main)
     
 //    curl -H "Authorization: Bearer t6gnvthb46ue64525naf6cbp" -H "Accept: application/json"
     
-    let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(input)?lang=it&appid=\(key)"
+    let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(città)?lang=it&appid=\(key)"
     
     let safeUrlString = endpoint.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
     
@@ -62,18 +56,36 @@ func AeroportoVicino(){
         print("Url non valido")
         return
     }
+    
+    var request = URLRequest(url: endPointUrl)
+    request.httpMethod = "GET"
+    
+    let dataTask = session.dataTask(with: request) { (data,response,error) in
+        guard let jsonData = data else {
+            print ("Payload invalid")
+            return
+        }
+        let decoder = JSONDecoder()
+        do{
+            let vicino = try JSONDecoder().decode([Aeroporti].self, from: jsonStringData)
+            print("json decoded")
+        } catch let error{
+            print("error")
+        }
+        
+    }
+    
+    dataTask.resume()
+    
 }
 
 class ViewController: UIViewController {
-    
-    
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        AeroportoVicino()
+        var input:Coordinate = Coordinate.init(longitudine: 38.193, latitudine: 15.552)
+        AeroportoVicino(città: input)
         // Do any additional setup after loading the view, typically from a nib.
     }
 
 
 }
-
