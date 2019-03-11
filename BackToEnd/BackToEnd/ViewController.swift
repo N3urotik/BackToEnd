@@ -42,7 +42,7 @@ public struct Airport:Codable {
 
 let jsonStringData = "Nearest Airport".data(using: .utf8)!
 let decoder = JSONDecoder()
-let aeroporti = try decoder.decode(Aeroporti.self, from: jsonStringData)
+let airports = try decoder.decode(Airports.self, from: jsonStringData)
 
 class ViewController: UIViewController {
 
@@ -68,7 +68,7 @@ class ViewController: UIViewController {
             return
             let decoder = JSONDecoder()
             do {
-                let aeroporti = try decoder.decode(Aeroporti.self, from: jsonData)
+                let airports = try decoder.decode(Airports.self, from: jsonData)
                 print("JSON decoded")
                 //USE THE LOADED DATA HERE
             } catch let error {
