@@ -82,7 +82,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        AeroportoVicino()
+        var input:Coordinate = Coordinate.init(longitudine: 38.193, latitudine: 15.552)
+        AeroportoVicino(città: input)
         // Do any additional setup after loading the view, typically from a nib.
     }
     
