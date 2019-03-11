@@ -43,38 +43,77 @@ public struct Airport:Codable {
 
 let jsonStringData = "Nearest Airport".data(using: .utf8)!
 let decoder = JSONDecoder()
-let airports = try decoder.decode(Airports.self, from: jsonStringData)
+//let airports = try decoder.decode(Airports.self, from: jsonStringData)
 
 class ViewController: UIViewController {
 
     func AeroportoVicino(){
         
         //DICHIARAZIONE LINK API CON RELATIVA CHIAVE
-        let session = URLSession(configuration: URLSessionConfiguration.default,
-                                 delegate: nil, delegateQueue: OperationQueue.main)
         let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/38.500,11.000"
-        let safeUrlString = endpoint.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)
-        guard let endpointURL = URL(string: safeUrlString!) else {
+        //eseguo un controllo per vedere se l'url è valido
+        guard let url = URL(string: endpoint) else {
             print("Url non valido")
-            return
+            exit(1)
         }
-        let key = "3xwxrgw6f9jtqwy77refs3dd"
-        var request = URLRequest(url: endpointURL)
+        let token = "jkerurhyncwv68rnbpctk9ue"
+        let session = URLSession.shared
+        var request = URLRequest(url: url)
         request.httpMethod = "GET"
-        request.addValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.addValue("application/json", forHTTPHeaderField: "Accept")
         let dataTask = session.dataTask(with: request) { (data, response, error) in
-            guard let jsonData = data else { }
-            print("Non ho decodificato")
-            return
-            let decoder = JSONDecoder()
-            do {
-                let airports = try decoder.decode(Airports.self, from: jsonData)
-                print("JSON decoded")
-                //USE THE LOADED DATA HERE
-            } catch let error {
-                print(" JSON decoding failed")
+            
+            // check for any errors
+            guard error == nil else {
+                print("Errore nella chiamata GET")
+                print(error!)
+                return
             }
+            
+            // make sure we got data
+            guard let responseData = data else {
+                print("Errore: Dati non ricevuti")
+                return
+            }
+            
+            // check the status code
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Errore: L' API non risponde")
+                return
+            }
+            
+            
+            // Reponse status
+            print("Response status code: \(httpResponse.statusCode)")
+            print("Response status debugDescription: \(httpResponse.debugDescription)")
+            print("Response status localizedString: \(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))")
+            
+            // parse the result as JSON, since that's what the API provides
+            do {
+                guard let todo = try JSONSerialization.jsonObject(with: responseData, options: [])
+                    as? [String: Any] else {
+                        print("non riesco a convertire il file JSON")
+                        return
+                }
+                // now we have the todo
+                // let's just print it to prove we can access it
+                print("The todo is: " + todo.description)
+                
+                // the todo object is a dictionary
+                // so we just access the title using the "title" key
+                // so check for a title and print it if we have one
+                guard let todoTitle = todo["title"] as? String else {
+                    print("Could not get todo title from JSON")
+                    print("responseData: \(String(data: responseData, encoding: String.Encoding.utf8))")
+                    return
+                }
+                print("The title is: " + todoTitle)
+            } catch  {
+                print("error trying to convert data to JSON")
+                return
+            }
+
         }
         dataTask.resume()
     }
