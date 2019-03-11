@@ -133,8 +133,8 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        myButton.layer.cornerRadius = 50
+        AeroportoVicino()
+        myButton.layer.cornerRadius = 20
         // Do any additional setup after loading the view, typically from a nib.
     }
     
