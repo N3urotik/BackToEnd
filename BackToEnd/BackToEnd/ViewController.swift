@@ -9,6 +9,7 @@
 import UIKit
 import Foundation
 
+/*
 public struct Airports: Codable {
     let airports: [Airport]
 }
@@ -38,7 +39,7 @@ public struct Airport:Codable {
     let Distance: Distance
 }
 
-
+*/
 
 
 let jsonStringData = "Nearest Airport".data(using: .utf8)!
@@ -51,10 +52,13 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var longitudine: UITextField!
     
-    
     @IBAction func cerca(_ sender: Any) {
         AeroportoVicino()
     }
+    
+    
+    @IBOutlet weak var myButton: UIButton!
+    
     
     func AeroportoVicino(){
         
@@ -129,12 +133,12 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
         
+        myButton.layer.cornerRadius = 50
         // Do any additional setup after loading the view, typically from a nib.
     }
     
     
-    @IBOutlet weak var lbl: UILabel! = Airports.airports.names[0]
+    //@IBOutlet weak var lbl: UILabel! = Airports.airports.names[0]
     
 }
