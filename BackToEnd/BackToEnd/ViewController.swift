@@ -9,7 +9,7 @@
 import UIKit
 import Foundation
 
-public struct Airports:Codable {
+public struct Airports: Codable {
     let airports: [Airport]
 }
 
@@ -46,11 +46,20 @@ let decoder = JSONDecoder()
 //let airports = try decoder.decode(Airports.self, from: jsonStringData)
 
 class ViewController: UIViewController {
-
+    
+    @IBOutlet weak var latitudine: UITextField!
+    
+    @IBOutlet weak var longitudine: UITextField!
+    
+    
+    @IBAction func cerca(_ sender: Any) {
+        AeroportoVicino()
+    }
+    
     func AeroportoVicino(){
         
         //DICHIARAZIONE LINK API CON RELATIVA CHIAVE
-        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/38.500,11.000"
+        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(String(describing: latitudine)),\(String(describing: longitudine))"
         //eseguo un controllo per vedere se l'url è valido
         guard let url = URL(string: endpoint) else {
             print("Url non valido")
@@ -118,13 +127,14 @@ class ViewController: UIViewController {
         dataTask.resume()
     }
     
-    //    @IBOutlet weak var myLbl: UILabel!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        AeroportoVicino()
+    
+        
         // Do any additional setup after loading the view, typically from a nib.
     }
     
+    
+    @IBOutlet weak var lbl: UILabel! = Airports.airports.names[0]
     
 }
