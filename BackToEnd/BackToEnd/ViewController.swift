@@ -8,6 +8,7 @@
 
 import UIKit
 import Foundation
+
 public struct Airports:Codable {
     let airports: [Airport]
 }
@@ -18,7 +19,7 @@ public struct Coordinate:Codable {
 }
 
 public struct Name:Codable{
-    let @LanguageCode: String
+    let LanguageCode: String
     let `$`: String
 }
 
@@ -33,7 +34,7 @@ public struct Airport:Codable {
     let CityCode: String
     let CountryCode: String
     let LocationType: String
-    let Names: Name
+    let Names: [Name]
     let Distance: Distance
 }
 
@@ -82,8 +83,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        var input:Coordinate = Coordinate.init(longitudine: 38.193, latitudine: 15.552)
-        AeroportoVicino(città: input)
+        AeroportoVicino()
         // Do any additional setup after loading the view, typically from a nib.
     }
     
