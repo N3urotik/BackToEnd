@@ -117,6 +117,50 @@ struct Link: Codable {
     }
 }
 
+//public struct Airports: Codable {
+//    let airports: [Airport]
+//}
+//
+//public struct Coordinate:Codable {
+//    let Latitude: Double
+//    let Longitude: Double
+//}
+//
+//public struct Name:Codable{
+//    let LanguageCode: String?
+//    let `$`: String?
+//}
+//
+//public struct Distance: Codable{
+//    let Value: Float?
+//    let UOM: String?
+//
+//    init(json: [String:Any]) {
+//        Value = json["Value"] as? Float ?? 0.1
+//        UOM = json["UOM"] as? String ?? ""
+//    }
+//}
+//
+//public struct Airport:Codable {
+//    let AirportCode: String?
+//    let Position: Coordinate?
+//    let CityCode: String?
+//    let CountryCode: String?
+//    let LocationType: String?
+//    let Names: [Name]?
+//    let Distance: Distance?
+//
+//    init(json: [String: Any]) {
+//        AirportCode = json["AirportCode"] as? String ?? ""
+//        Position = (json["Position"] as? Coordinate)!
+//        CityCode = json["CityCode"] as? String ?? ""
+//        CountryCode = json["CountryCode"] as? String ?? ""
+//        LocationType = json["LocationType"] as? String ?? ""
+//        Names = [(json["Names"] as? Name)!]
+//        Distance = (json["Distance"] as? Distance)!
+//
+//    }
+//}
 
 
 
