@@ -9,52 +9,158 @@
 import UIKit
 import Foundation
 
-public struct Airports: Codable {
-    let airports: [Airport]
+struct Welcome: Codable {
+    let nearestAirportResource: NearestAirportResource
     
-    
-}
-
-public struct Coordinate:Codable {
-    let Latitude: Double
-    let Longitude: Double
-}
-
-public struct Name:Codable{
-    let LanguageCode: String?
-    let `$`: String?
-}
-
-public struct Distance: Codable{
-    let Value: Float?
-    let UOM: String?
-    
-    init(json: [String:Any]) {
-        Value = json["Value"] as? Float ?? 0.1
-        UOM = json["UOM"] as? String ?? ""
+    enum CodingKeys: String, CodingKey {
+        case nearestAirportResource = "NearestAirportResource"
     }
 }
 
-public struct Airport:Codable {
-    let AirportCode: String?
-    let Position: Coordinate
-    let CityCode: String?
-    let CountryCode: String?
-    let LocationType: String?
-    let Names: [Name]
-    let Distance: Distance
+struct NearestAirportResource: Codable {
+    let airports: Airports
+    let meta: Meta
     
-    init(json: [String: Any]) {
-        AirportCode = json["AirportCode"] as? String ?? ""
-        Position = (json["Position"] as? Coordinate)!
-        CityCode = json["CityCode"] as? String ?? ""
-        CountryCode = json["CountryCode"] as? String ?? ""
-        LocationType = json["LocationType"] as? String ?? ""
-        Names = [(json["Names"] as? Name)!]
-        Distance = (json["Distance"] as? Distance)!
-        
+    enum CodingKeys: String, CodingKey {
+        case airports = "Airports"
+        case meta = "Meta"
     }
 }
+
+struct Airports: Codable {
+    let airport: [Airport]
+    
+    enum CodingKeys: String, CodingKey {
+        case airport = "Airport"
+    }
+}
+
+struct Airport: Codable {
+    let airportCode: String
+    let position: Position
+    let cityCode, countryCode, locationType: String
+    let names: Names
+    let distance: Distance
+    
+    enum CodingKeys: String, CodingKey {
+        case airportCode = "AirportCode"
+        case position = "Position"
+        case cityCode = "CityCode"
+        case countryCode = "CountryCode"
+        case locationType = "LocationType"
+        case names = "Names"
+        case distance = "Distance"
+    }
+}
+
+struct Distance: Codable {
+    let value: Int
+    let uom: String
+    
+    enum CodingKeys: String, CodingKey {
+        case value = "Value"
+        case uom = "UOM"
+    }
+}
+
+struct Names: Codable {
+    let name: [Name]
+    
+    enum CodingKeys: String, CodingKey {
+        case name = "Name"
+    }
+}
+
+struct Name: Codable {
+    let languageCode, empty: String
+    
+    enum CodingKeys: String, CodingKey {
+        case languageCode = "@LanguageCode"
+        case empty = "$"
+    }
+}
+
+struct Position: Codable {
+    let coordinate: Coordinate
+    
+    enum CodingKeys: String, CodingKey {
+        case coordinate = "Coordinate"
+    }
+}
+
+struct Coordinate: Codable {
+    let latitude, longitude: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case latitude = "Latitude"
+        case longitude = "Longitude"
+    }
+}
+
+struct Meta: Codable {
+    let version: String
+    let link: [Link]
+    
+    enum CodingKeys: String, CodingKey {
+        case version = "@Version"
+        case link = "Link"
+    }
+}
+
+struct Link: Codable {
+    let href: String
+    let rel: String
+    
+    enum CodingKeys: String, CodingKey {
+        case href = "@Href"
+        case rel = "@Rel"
+    }
+}
+
+//public struct Airports: Codable {
+//    let airports: [Airport]
+//}
+//
+//public struct Coordinate:Codable {
+//    let Latitude: Double
+//    let Longitude: Double
+//}
+//
+//public struct Name:Codable{
+//    let LanguageCode: String?
+//    let `$`: String?
+//}
+//
+//public struct Distance: Codable{
+//    let Value: Float?
+//    let UOM: String?
+//
+//    init(json: [String:Any]) {
+//        Value = json["Value"] as? Float ?? 0.1
+//        UOM = json["UOM"] as? String ?? ""
+//    }
+//}
+//
+//public struct Airport:Codable {
+//    let AirportCode: String?
+//    let Position: Coordinate?
+//    let CityCode: String?
+//    let CountryCode: String?
+//    let LocationType: String?
+//    let Names: [Name]?
+//    let Distance: Distance?
+//
+//    init(json: [String: Any]) {
+//        AirportCode = json["AirportCode"] as? String ?? ""
+//        Position = (json["Position"] as? Coordinate)!
+//        CityCode = json["CityCode"] as? String ?? ""
+//        CountryCode = json["CountryCode"] as? String ?? ""
+//        LocationType = json["LocationType"] as? String ?? ""
+//        Names = [(json["Names"] as? Name)!]
+//        Distance = (json["Distance"] as? Distance)!
+//
+//    }
+//}
 
 
 
@@ -62,8 +168,6 @@ public struct Airport:Codable {
 let jsonStringData = "Nearest Airport".data(using: .utf8)!
 let decoder = JSONDecoder()
 //let airports = try decoder.decode(Airports.self, from: jsonStringData)
-
-
 
 
 
@@ -119,6 +223,7 @@ class ViewController: UIViewController {
             
             
             // Reponse status
+            print("TEST: \(responseData)")
             print("Response status code: \(httpResponse.statusCode)")
             print("Response status debugDescription: \(httpResponse.debugDescription)")
             print("Response status localizedString: \(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))")
@@ -131,14 +236,13 @@ class ViewController: UIViewController {
                         print("non riesco a convertire il file JSON")
                         return
                 }
-                print("pesc")
-                let richiamo = try JSONDecoder().decode(Airport.self, from: data!)
-                print(richiamo.AirportCode)
-
-                
+               print(todo.description)
+               let richiamo = try JSONDecoder().decode(Welcome.self, from: responseData)
+                print("AIRPORT CODE ------> ")
+                print(richiamo.nearestAirportResource.airports.airport[0].airportCode)
                 // now we have the todo
                 // let's just print it to prove we can access it
-                print("The todo is: " + todo.description)
+                //print("The todo is: " + todo.description)
                 
                 // the todo object is a dictionary
                 // so we just access the title using the "title" key
