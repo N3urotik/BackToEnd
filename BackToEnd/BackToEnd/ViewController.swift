@@ -9,9 +9,10 @@
 import UIKit
 import Foundation
 
-/*
 public struct Airports: Codable {
     let airports: [Airport]
+    
+    
 }
 
 public struct Coordinate:Codable {
@@ -20,31 +21,51 @@ public struct Coordinate:Codable {
 }
 
 public struct Name:Codable{
-    let LanguageCode: String
-    let `$`: String
+    let LanguageCode: String?
+    let `$`: String?
 }
 
 public struct Distance: Codable{
-    let Value: Float
-    let UOM: String
+    let Value: Float?
+    let UOM: String?
+    
+    init(json: [String:Any]) {
+        Value = json["Value"] as? Float ?? 0.1
+        UOM = json["UOM"] as? String ?? ""
+    }
 }
 
 public struct Airport:Codable {
-    let AirportCode: String
+    let AirportCode: String?
     let Position: Coordinate
-    let CityCode: String
-    let CountryCode: String
-    let LocationType: String
+    let CityCode: String?
+    let CountryCode: String?
+    let LocationType: String?
     let Names: [Name]
     let Distance: Distance
+    
+    init(json: [String: Any]) {
+        AirportCode = json["AirportCode"] as? String ?? ""
+        Position = (json["Position"] as? Coordinate)!
+        CityCode = json["CityCode"] as? String ?? ""
+        CountryCode = json["CountryCode"] as? String ?? ""
+        LocationType = json["LocationType"] as? String ?? ""
+        Names = [(json["Names"] as? Name)!]
+        Distance = (json["Distance"] as? Distance)!
+        
+    }
 }
 
-*/
+
 
 
 let jsonStringData = "Nearest Airport".data(using: .utf8)!
 let decoder = JSONDecoder()
 //let airports = try decoder.decode(Airports.self, from: jsonStringData)
+
+
+
+
 
 class ViewController: UIViewController {
     
@@ -63,7 +84,7 @@ class ViewController: UIViewController {
     func AeroportoVicino(){
         
         //DICHIARAZIONE LINK API CON RELATIVA CHIAVE
-        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(String(describing: latitudine)),\(String(describing: longitudine))"
+        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/38.000,17.000"
         //eseguo un controllo per vedere se l'url è valido
         guard let url = URL(string: endpoint) else {
             print("Url non valido")
@@ -104,11 +125,17 @@ class ViewController: UIViewController {
             
             // parse the result as JSON, since that's what the API provides
             do {
+                
                 guard let todo = try JSONSerialization.jsonObject(with: responseData, options: [])
                     as? [String: Any] else {
                         print("non riesco a convertire il file JSON")
                         return
                 }
+                print("pesc")
+                let richiamo = try JSONDecoder().decode(Airport.self, from: data!)
+                print(richiamo.AirportCode)
+
+                
                 // now we have the todo
                 // let's just print it to prove we can access it
                 print("The todo is: " + todo.description)
@@ -134,7 +161,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        myButton.layer.cornerRadius = 50
+        myButton.layer.cornerRadius = 5
         // Do any additional setup after loading the view, typically from a nib.
     }
     
