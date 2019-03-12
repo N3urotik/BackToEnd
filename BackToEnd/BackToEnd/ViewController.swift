@@ -9,42 +9,123 @@
 import UIKit
 import Foundation
 
-/*
-public struct Airports: Codable {
-    let airports: [Airport]
+struct Welcome: Codable {
+    let nearestAirportResource: NearestAirportResource
+    
+    enum CodingKeys: String, CodingKey {
+        case nearestAirportResource = "NearestAirportResource"
+    }
 }
 
-public struct Coordinate:Codable {
-    let Latitude: Double
-    let Longitude: Double
+struct NearestAirportResource: Codable {
+    let airports: Airports
+    let meta: Meta
+    
+    enum CodingKeys: String, CodingKey {
+        case airports = "Airports"
+        case meta = "Meta"
+    }
 }
 
-public struct Name:Codable{
-    let LanguageCode: String
-    let `$`: String
+struct Airports: Codable {
+    let airport: [Airport]
+    
+    enum CodingKeys: String, CodingKey {
+        case airport = "Airport"
+    }
 }
 
-public struct Distance: Codable{
-    let Value: Float
-    let UOM: String
+struct Airport: Codable {
+    let airportCode: String
+    let position: Position
+    let cityCode, countryCode, locationType: String
+    let names: Names
+    let distance: Distance
+    
+    enum CodingKeys: String, CodingKey {
+        case airportCode = "AirportCode"
+        case position = "Position"
+        case cityCode = "CityCode"
+        case countryCode = "CountryCode"
+        case locationType = "LocationType"
+        case names = "Names"
+        case distance = "Distance"
+    }
 }
 
-public struct Airport:Codable {
-    let AirportCode: String
-    let Position: Coordinate
-    let CityCode: String
-    let CountryCode: String
-    let LocationType: String
-    let Names: [Name]
-    let Distance: Distance
+struct Distance: Codable {
+    let value: Int
+    let uom: String
+    
+    enum CodingKeys: String, CodingKey {
+        case value = "Value"
+        case uom = "UOM"
+    }
 }
 
-*/
+struct Names: Codable {
+    let name: [Name]
+    
+    enum CodingKeys: String, CodingKey {
+        case name = "Name"
+    }
+}
+
+struct Name: Codable {
+    let languageCode, empty: String
+    
+    enum CodingKeys: String, CodingKey {
+        case languageCode = "@LanguageCode"
+        case empty = "$"
+    }
+}
+
+struct Position: Codable {
+    let coordinate: Coordinate
+    
+    enum CodingKeys: String, CodingKey {
+        case coordinate = "Coordinate"
+    }
+}
+
+struct Coordinate: Codable {
+    let latitude, longitude: Double
+    
+    enum CodingKeys: String, CodingKey {
+        case latitude = "Latitude"
+        case longitude = "Longitude"
+    }
+}
+
+struct Meta: Codable {
+    let version: String
+    let link: [Link]
+    
+    enum CodingKeys: String, CodingKey {
+        case version = "@Version"
+        case link = "Link"
+    }
+}
+
+struct Link: Codable {
+    let href: String
+    let rel: String
+    
+    enum CodingKeys: String, CodingKey {
+        case href = "@Href"
+        case rel = "@Rel"
+    }
+}
+
+
+
 
 
 let jsonStringData = "Nearest Airport".data(using: .utf8)!
 let decoder = JSONDecoder()
 //let airports = try decoder.decode(Airports.self, from: jsonStringData)
+
+
 
 class ViewController: UIViewController {
     
@@ -54,6 +135,8 @@ class ViewController: UIViewController {
     
     @IBAction func cerca(_ sender: Any) {
         AeroportoVicino()
+//        print(latitudine.text!)
+//        print("https://api.lufthansa.com/v1/references/airports/nearest/\(latitudine.text!),14.305")
     }
     
     
@@ -63,7 +146,8 @@ class ViewController: UIViewController {
     func AeroportoVicino(){
         
         //DICHIARAZIONE LINK API CON RELATIVA CHIAVE
-        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(String(describing: latitudine)),\(String(describing: longitudine))"
+//        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(latitudine.text),14.305"
+        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(latitudine.text!),\(longitudine.text!)"
         //eseguo un controllo per vedere se l'url è valido
         guard let url = URL(string: endpoint) else {
             print("Url non valido")
@@ -98,27 +182,33 @@ class ViewController: UIViewController {
             
             
             // Reponse status
+            print("TEST: \(responseData)")
             print("Response status code: \(httpResponse.statusCode)")
             print("Response status debugDescription: \(httpResponse.debugDescription)")
             print("Response status localizedString: \(HTTPURLResponse.localizedString(forStatusCode: httpResponse.statusCode))")
             
             // parse the result as JSON, since that's what the API provides
             do {
+                
                 guard let todo = try JSONSerialization.jsonObject(with: responseData, options: [])
                     as? [String: Any] else {
                         print("non riesco a convertire il file JSON")
                         return
                 }
+                print(todo.description)
+                let richiamo = try JSONDecoder().decode(Welcome.self, from: responseData)
+                print("AIRPORT CODE ------> ")
+                print(richiamo.nearestAirportResource.airports.airport[0].airportCode)
                 // now we have the todo
                 // let's just print it to prove we can access it
-                print("The todo is: " + todo.description)
+                //print("The todo is: " + todo.description)
                 
                 // the todo object is a dictionary
                 // so we just access the title using the "title" key
                 // so check for a title and print it if we have one
                 guard let todoTitle = todo["title"] as? String else {
                     print("Could not get todo title from JSON")
-                    print("responseData: \(String(data: responseData, encoding: String.Encoding.utf8))")
+//                    print("responseData: \(String(data: responseData, encoding: String.Encoding.utf8))")
                     return
                 }
                 print("The title is: " + todoTitle)
@@ -126,15 +216,15 @@ class ViewController: UIViewController {
                 print("error trying to convert data to JSON")
                 return
             }
-
+            
         }
         dataTask.resume()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        AeroportoVicino()
-        myButton.layer.cornerRadius = 20
+        
+        myButton.layer.cornerRadius = 5
         // Do any additional setup after loading the view, typically from a nib.
     }
     
