@@ -9,6 +9,8 @@
 import UIKit
 import Foundation
 
+
+//DECODE JSON FORMAT IN SWIFT FORMAT
 struct Welcome: Codable {
     let nearestAirportResource: NearestAirportResource
     
@@ -117,59 +119,11 @@ struct Link: Codable {
     }
 }
 
-//public struct Airports: Codable {
-//    let airports: [Airport]
-//}
-//
-//public struct Coordinate:Codable {
-//    let Latitude: Double
-//    let Longitude: Double
-//}
-//
-//public struct Name:Codable{
-//    let LanguageCode: String?
-//    let `$`: String?
-//}
-//
-//public struct Distance: Codable{
-//    let Value: Float?
-//    let UOM: String?
-//
-//    init(json: [String:Any]) {
-//        Value = json["Value"] as? Float ?? 0.1
-//        UOM = json["UOM"] as? String ?? ""
-//    }
-//}
-//
-//public struct Airport:Codable {
-//    let AirportCode: String?
-//    let Position: Coordinate?
-//    let CityCode: String?
-//    let CountryCode: String?
-//    let LocationType: String?
-//    let Names: [Name]?
-//    let Distance: Distance?
-//
-//    init(json: [String: Any]) {
-//        AirportCode = json["AirportCode"] as? String ?? ""
-//        Position = (json["Position"] as? Coordinate)!
-//        CityCode = json["CityCode"] as? String ?? ""
-//        CountryCode = json["CountryCode"] as? String ?? ""
-//        LocationType = json["LocationType"] as? String ?? ""
-//        Names = [(json["Names"] as? Name)!]
-//        Distance = (json["Distance"] as? Distance)!
-//
-//    }
-//}
-
-
+//ENDED DECODE
 
 
 let jsonStringData = "Nearest Airport".data(using: .utf8)!
 let decoder = JSONDecoder()
-//let airports = try decoder.decode(Airports.self, from: jsonStringData)
-
-
 
 class ViewController: UIViewController {
     
@@ -178,23 +132,20 @@ class ViewController: UIViewController {
     @IBOutlet weak var longitudine: UITextField!
     
     @IBAction func cerca(_ sender: Any) {
-        AeroportoVicino()
-//        print(latitudine.text!)
-//        print("https://api.lufthansa.com/v1/references/airports/nearest/\(latitudine.text!),14.305")
+        NearestAirport()
     }
     
     
     @IBOutlet weak var myButton: UIButton!
     
     
-    func AeroportoVicino(){
+    func NearestAirport(){
         
-        //DICHIARAZIONE LINK API CON RELATIVA CHIAVE
-//        let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(latitudine.text),14.305"
+        //DECLARE API LINK IN THE RIGHT FORMAT
         let endpoint = "https://api.lufthansa.com/v1/references/airports/nearest/\(latitudine.text!),\(longitudine.text!)"
-        //eseguo un controllo per vedere se l'url è valido
+        //CHECK IF THE FORMAT IS CORRECTLY FORMATTED
         guard let url = URL(string: endpoint) else {
-            print("Url non valido")
+            print("Url not valid")
             exit(1)
         }
         let token = "jkerurhyncwv68rnbpctk9ue"
@@ -207,20 +158,20 @@ class ViewController: UIViewController {
             
             // check for any errors
             guard error == nil else {
-                print("Errore nella chiamata GET")
+                print("Error in the GET call")
                 print(error!)
                 return
             }
             
             // make sure we got data
             guard let responseData = data else {
-                print("Errore: Dati non ricevuti")
+                print("Error: Data not received")
                 return
             }
             
             // check the status code
             guard let httpResponse = response as? HTTPURLResponse else {
-                print("Errore: L' API non risponde")
+                print("Error: API doesn't answer")
                 return
             }
             
@@ -241,8 +192,14 @@ class ViewController: UIViewController {
                 }
                 print(todo.description)
                 let richiamo = try JSONDecoder().decode(Welcome.self, from: responseData)
-                print("AIRPORT CODE ------> ")
+                print("AIRPORT CODE: ")
                 print(richiamo.nearestAirportResource.airports.airport[0].airportCode)
+                print("AIRPORT NAME: ")
+                print(richiamo.nearestAirportResource.airports.airport[0].names.name[3])
+                print("DISTANCE: ")
+                print(richiamo.nearestAirportResource.airports.airport[0].distance.value)
+                print("\(richiamo.nearestAirportResource.airports.airport[0].distance.uom)\n")
+                
                 // now we have the todo
                 // let's just print it to prove we can access it
                 //print("The todo is: " + todo.description)
@@ -267,12 +224,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         myButton.layer.cornerRadius = 5
         // Do any additional setup after loading the view, typically from a nib.
     }
-    
-    
-    //@IBOutlet weak var lbl: UILabel! = Airports.airports.names[0]
-    
 }
