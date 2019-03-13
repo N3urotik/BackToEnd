@@ -134,6 +134,7 @@ class ViewController: UIViewController {
     @IBAction func cerca(_ sender: Any) {
         NearestAirport()
     }
+    @IBOutlet weak var label: UILabel!
     
     
     @IBOutlet weak var myButton: UIButton!
@@ -148,7 +149,7 @@ class ViewController: UIViewController {
             print("Url not valid")
             exit(1)
         }
-        let token = "jkerurhyncwv68rnbpctk9ue"
+        let token = "x8ncz7wwcke4n3bsvp5b4yxn"
         let session = URLSession.shared
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
@@ -192,6 +193,9 @@ class ViewController: UIViewController {
                 }
                 print(todo.description)
                 let richiamo = try JSONDecoder().decode(Welcome.self, from: responseData)
+                DispatchQueue.main.async { // Correct
+                    self.label.text = ("The airport code is \(richiamo.nearestAirportResource.airports.airport[0].airportCode) and the distance is \(richiamo.nearestAirportResource.airports.airport[0].distance.value) \(richiamo.nearestAirportResource.airports.airport[0].distance.uom)")
+                }
                 print("AIRPORT CODE: ")
                 print(richiamo.nearestAirportResource.airports.airport[0].airportCode)
                 print("AIRPORT NAME: ")
@@ -217,6 +221,7 @@ class ViewController: UIViewController {
                 print("error trying to convert data to JSON")
                 return
             }
+            
             
         }
         dataTask.resume()
